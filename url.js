@@ -1,18 +1,20 @@
-const {nanoid} = require("nanoid");
-const URL = require('../models/url');
+const mongoose = require("mongoose");
 
-async function handleGenerateNewShortURL(req,res){
-    const body = req.body;
-    if(!body.url)return re.status(400).json({error:"url is required"});
-    const shortID = shortid();
+const urlSchema = new mongoose.Schema({
+    shortId:{
+        type: String,
+        required: true,
+        unique: true,
+    },
+    redirectURL:{
+        type: String,
+        required: true,
+    },
+    visitHistory: [{timestamp:{type:Number}}]
+},
+{timestamps:true}
+);
 
-    await URL.create({
-        shortId: shortID,
-        redirectURL: body.url,
-        visitHistory: [],
-    });
-    return res.json({id: shortId});
-}
-module.exports={
-    handleGenerateNewShortURL,
-};
+const URL = mongoose.model('url',urlSchema);
+
+module.exports = URL;
